@@ -24,6 +24,7 @@ import nidaqmx.stream_writers
 import nidaqmx.system
 from nidaqmx.constants import SampleTimingType
 from nidaqmx.constants import TerminalConfiguration
+from nidaqmx.constants import DigitalDriveType
 system = nidaqmx.system.System.local()
 
 
@@ -482,7 +483,7 @@ def dataReadAndWrite(**kwargs):
     return data
 
 
-def digital_output():
+def digital_output(voltage_level):
     with nidaqmx.Task() as task:
         dev = system.devices[0]
 
@@ -490,13 +491,22 @@ def digital_output():
         # do = dev.do_lines.channel_names
         # print(do)
 
-        task.do_channels.add_do_chan('Dev1/port0/line0')
+        chan = task.do_channels.add_do_chan(
+            'Dev1/port0/line0')
+
+        # DigitalDriveType=DigitalDriveType.ACTIVE_DRIVE
+        # task.do_channels.all.do_output_drive_type = 'ACTIVE_DRIVE'
+        # task.do_channels.all(DigitalDriveType.ACTIVE_DRIVE)
+        # chan.do_output_drive_type.ACTIVE_DRIVE
+        chan.do_output_drive_type = DigitalDriveType.ACTIVE_DRIVE
+        print(chan.do_output_drive_type)
+
         stream = task.out_stream
+
         digital_single_channel_writer = nidaqmx.stream_writers.DigitalSingleChannelWriter(
             stream)
         # High = 5V, Low = 0V - digitaler Kanal, nur High oder Low möglich
-        digital_single_channel_writer.write_one_sample_one_line(0)
-        time.sleep(5)
+        digital_single_channel_writer.write_one_sample_one_line(voltage_level)
         task.stop()
         # task.start()
         # for i in range(11):
