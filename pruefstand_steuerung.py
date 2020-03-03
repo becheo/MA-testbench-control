@@ -599,11 +599,13 @@ elif mode == 8:
 
 elif mode == 9:
     # mode 9: Digitalen Ausgang ansteuern
-    output = mdt_custom.digital_output(0)
+
+    # voltage_level 0: Low; 1: High
+    output = mdt_custom.digital_output('Dev1/port0/line0', 0)
     time.sleep(3)
-    output = mdt_custom.digital_output(1)
-    time.sleep(3)
-    output = mdt_custom.digital_output(0)
+    output = mdt_custom.digital_output('Dev1/port0/line0', 1)
+    time.sleep(10)
+    output = mdt_custom.digital_output('Dev1/port0/line0', 0)
 
     print("Output: ", output)
 

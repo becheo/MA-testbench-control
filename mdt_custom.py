@@ -483,35 +483,22 @@ def dataReadAndWrite(**kwargs):
     return data
 
 
-def digital_output(voltage_level):
+def digital_output(channel_name, voltage_level):
     with nidaqmx.Task() as task:
+
         dev = system.devices[0]
+        chan = task.do_channels.add_do_chan(channel_name)
 
-        # do = dev.do_ports.channel_names
-        # do = dev.do_lines.channel_names
-        # print(do)
-
-        chan = task.do_channels.add_do_chan(
-            'Dev1/port0/line0')
-
-        # DigitalDriveType=DigitalDriveType.ACTIVE_DRIVE
-        # task.do_channels.all.do_output_drive_type = 'ACTIVE_DRIVE'
-        # task.do_channels.all(DigitalDriveType.ACTIVE_DRIVE)
-        # chan.do_output_drive_type.ACTIVE_DRIVE
+        # configure channel as active drive to be able to power LEDs
         chan.do_output_drive_type = DigitalDriveType.ACTIVE_DRIVE
-        print(chan.do_output_drive_type)
 
         stream = task.out_stream
-
         digital_single_channel_writer = nidaqmx.stream_writers.DigitalSingleChannelWriter(
             stream)
-        # High = 5V, Low = 0V - digitaler Kanal, nur High oder Low möglich
+
+        # High: 5V (open-collector), 3,5V (active drive); Low = 0V
         digital_single_channel_writer.write_one_sample_one_line(voltage_level)
         task.stop()
-        # task.start()
-        # for i in range(11):
-        #     task.write([0])
-        #     time.sleep(1)
 
     return dev
 
