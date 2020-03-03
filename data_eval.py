@@ -17,7 +17,7 @@ import os
 # TODO plots anpassen auf Anzahl an Messreihen der Datei
 
 #  +++++++++++++++    Einstellungen    ++++++++++++++++++++++++++++++++++++++++
-filename_web = "USB6009-Messung-Strom-48kHz.txt"
+filename_web = "USB6009-Messung.txt"
 show_specific_time_range = False
 time_start = 30.0
 time_end = 40.0

@@ -4,9 +4,10 @@ Script zum Erstellen eines Spannungsverlaufs für den Prüfstand
 Masterarbeit: Entwicklung eines vernetzten Prüftands zur web-basierten Validierung und Parametrierung von Simulationsmodellen
 """
 
+import time
 import numpy as np
 import matplotlib.pyplot as plt
-import time
+
 
 samplerate_write = 500  # Ausgabefrequenz [Hz]
 voltage_np = np.array([0], dtype=np.float64)
