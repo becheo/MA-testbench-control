@@ -25,7 +25,7 @@ import mdt_custom  # local modules
 # from os.path import isfile, join
 
 
-mode = 8
+mode = 9
 # mode 1: nur lesen
 # mode 2: nur schreiben - mehrere Samples
 # mode 3: nur schreiben - ein sample
@@ -465,7 +465,9 @@ elif mode == 8:
 
     # Parameter
     Samplerate_read = 2000  # [Hz] -> Muss immer vielfaches von 'write' sein
-    Samplerate_write = 500  # [Hz] -> muss gleich wie in 'Ersteller'-Datei sein
+    # TODO Samplerate_write überprüfen: Bei welcher samplerate wird Messdauer eingehalten?
+    # -> Am 03.03.20 Probleme bei 500 Hz: Messung dauerte länger als sie sollte (19 statt 17 Sekunden)
+    Samplerate_write = 250  # [Hz] -> muss gleich wie in 'Ersteller'-Datei sein
     Channels = [0, 1, 2, 3, 6]  # TODO mit anderen Kanälen überprüfen
 
     # TODO verschiedene Amplituden für verschiedene Kanäle verwenden
@@ -535,6 +537,7 @@ elif mode == 8:
             f.write("\n")
         f.close()
 
+    # TODO Plot entsprechend der Anzahl an ausgelesenen Kanälen erstellen
     # Visualisierung - alle Spannungsverläufe
     plt.subplot(2, 3, 1)
     plt.title('Spannung Tachometer')
@@ -596,7 +599,14 @@ elif mode == 8:
 
 elif mode == 9:
     # mode 9: Digitalen Ausgang ansteuern
-    output = mdt_custom.digital_output()
+
+    # voltage_level 0: Low; 1: High
+    output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+    time.sleep(3)
+    output = mdt_custom.digital_output('Dev1/port0/line0', 1)
+    time.sleep(10)
+    output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+
     print("Output: ", output)
 
 else:
