@@ -25,7 +25,7 @@ import mdt_custom  # local modules
 # from os.path import isfile, join
 
 
-mode = 9
+mode = 8
 # mode 1: nur lesen
 # mode 2: nur schreiben - mehrere Samples
 # mode 3: nur schreiben - ein sample
@@ -509,6 +509,9 @@ elif mode == 8:
     # 2: In Schleife Zeit in array schreiben (nicht für jeden Datenpunkt möglich, da immer viele Samples auf einmal gelesenw werden in einer Funktion)
     time_values = np.arange(0, Dauer, (1/Samplerate_read))
 
+    # Hier Daten verrechnen
+
+    # TODO Daten verrechnen wie in 'data_eval' (Spannung Strommessung -> Strom, usw.)
     # Daten abspeichern
     data_length = len(measurement[0, :])
     index = list(range(1, data_length+1))
@@ -564,8 +567,9 @@ elif mode == 8:
     plt.ylabel('Spannung in V')
     plt.grid(True)
     plt.subplot(2, 3, 5)
-    plt.title('Spannung Kanal 6')
+    plt.title('Spannung Temperaturmessung')
     plt.plot(time_values, measurement[4, :])
+    plt.axis([0, Dauer, 0, 5])
     plt.xlabel('Zeit in s')
     plt.ylabel('Spannung in V')
     plt.grid(True)

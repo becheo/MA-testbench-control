@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-samplerate_write = 500  # Ausgabefrequenz [Hz]
+samplerate_write = 250  # Ausgabefrequenz [Hz]
 voltage_np = np.array([0], dtype=np.float64)
 dateiname = "Spannungsvorgabe.txt"
 
@@ -107,7 +107,7 @@ def voltage_step(array, endvalue):
 
 start_time = time.time()
 
-voltage_np = voltage_alter(voltage_np, 2, 1.5)
+voltage_np = voltage_alter(voltage_np, 2, 0.5)
 voltage_np = voltage_hold(voltage_np, 10)
 # voltage_np = voltage_step(voltage_np, 3.0)
 # voltage_np = voltage_alter(voltage_np, 10, 3.0)
