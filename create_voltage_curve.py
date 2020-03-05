@@ -107,12 +107,12 @@ def voltage_step(array, endvalue):
 
 start_time = time.time()
 
-voltage_np = voltage_alter(voltage_np, 2, 0.5)
-voltage_np = voltage_hold(voltage_np, 10)
+voltage_np = voltage_alter(voltage_np, 10, 1.5)
+voltage_np = voltage_hold(voltage_np, 40)
 # voltage_np = voltage_step(voltage_np, 3.0)
 # voltage_np = voltage_alter(voltage_np, 10, 3.0)
 # voltage_np = voltage_hold(voltage_np, 10)
-voltage_np = voltage_alter(voltage_np, 2, 0.0)
+voltage_np = voltage_alter(voltage_np, 10, 0.0)
 
 # ++++++++++++++++++++++    Array creation end    +++++++++++++++++++++++++++++
 print("Dauer Erstellung: ", time.time()-start_time)
