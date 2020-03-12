@@ -484,6 +484,24 @@ def dataReadAndWrite(**kwargs):
 
 
 def digital_output(channel_name, voltage_level):
+    """Control the digital output from USB6009
+
+    Use this function to control the digital output via nidaqmx on USB6009. The
+    digital outputs can be used to control LEDs. Even though high voltage is 5 V
+    (open collector, inital state when connecting USB6009 via USB), when set as
+    active drive the voltage is set to be 3.5 V only. For further information
+    refer to USB6009 manual and specification sheet.
+
+    Parameters:
+        channel_name (str): The name of channel to set. Name depends on the port
+            and line that should be used. Typically looks similar to this:
+            'Dev1/port0/line0'
+        voltage_level (bool): 0 (Low: 0V, 0A) or 1 (High: 3.5V, 8.5mA)
+
+    Returns:
+        dev (str): currently active system device
+    """
+
     with nidaqmx.Task() as task:
 
         dev = system.devices[0]
