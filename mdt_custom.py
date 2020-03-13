@@ -458,8 +458,16 @@ def dataReadAndWrite(**kwargs):
             samplesLeft -= samplesPerChunk
             # Ausgabe
             # TODO aktuelle Drehzahl ergänzen, überprüfen ob diese Daten an Website übergeben werden können
-            print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Drehzahl: {:.0f};    Spg. Temp.: {:.0f}" .format(
-                time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], ((data[0][i*samplesPerChunk])/4.3)*1000, data[4][i*samplesPerChunk]), end='\r')
+            # Ausgabe bei 5 Messkanälen (mit Temperaturmessung):
+            print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Spg. Temp.: {:.3f};    Drehzahl: {:.0f}" .format(
+                time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], data[4][i*samplesPerChunk], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
+            # Ausgabe bei 5 Messkanälen (mit AI6 als Messeingang):
+            # print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Spg. AI6: {:.3f};    Drehzahl: {:.0f}" .format(
+            #     time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], data[4][i*samplesPerChunk], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
+
+            # Ausgabe bei 4 Messkanälen:
+            # print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Drehzahl: {:.0f}" .format(
+            #     time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
 
         end_time = time.time() - start_time
         print("\nDauer der Messung: ", end_time)

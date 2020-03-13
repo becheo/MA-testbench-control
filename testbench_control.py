@@ -517,7 +517,7 @@ elif mode == 8:
     index = list(range(1, data_length+1))
     Textdatei = {"Header": "TU Berlin - Pruefstand Scheibenlaeufer",
                  "Modul": "Modellbildung und Simulation mechatronischer Systeme",
-                 "Spalteninhalt": "Index, Zeit[s], Spg. Tachometer[V], Spg. Generator[V], Spg. Motor[V], Spg. Strommessung[V]"}
+                 "Spalteninhalt": "Index, Zeit[s], Spg. Tachometer[V], Spg. Generator[V], Spg. Motor[V], Spg. Strommessung[V], Spg. AI6[V]"}
     num_of_chans = len(Channels)
     with open("USB6009-Messung.txt", "w") as f:
         f.write(Textdatei["Header"]+"\n"+Textdatei["Modul"]+"\n")
@@ -607,10 +607,16 @@ elif mode == 9:
 
     # voltage_level 0: Low; 1: High
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+    mdt_custom.digital_output('Dev1/port0/line1', 0)
+    mdt_custom.digital_output('Dev1/port0/line2', 0)
     time.sleep(3)
     output = mdt_custom.digital_output('Dev1/port0/line0', 1)
+    mdt_custom.digital_output('Dev1/port0/line1', 1)
+    mdt_custom.digital_output('Dev1/port0/line2', 1)
     time.sleep(10)
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+    mdt_custom.digital_output('Dev1/port0/line1', 0)
+    mdt_custom.digital_output('Dev1/port0/line2', 0)
 
     print("Output: ", output)
 
