@@ -1,3 +1,8 @@
 *.txt
 *.pdf
 *.JPG
+
+config.py
+testing.py
+__pycache__/
+main.py

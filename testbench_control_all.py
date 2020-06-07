@@ -25,7 +25,7 @@ import mdt_custom  # local modules
 # from os.path import isfile, join
 
 
-mode = 9
+mode = 3
 # mode 1: nur lesen
 # mode 2: nur schreiben - mehrere Samples
 # mode 3: nur schreiben - ein sample
@@ -509,12 +509,15 @@ elif mode == 8:
     # 2: In Schleife Zeit in array schreiben (nicht für jeden Datenpunkt möglich, da immer viele Samples auf einmal gelesenw werden in einer Funktion)
     time_values = np.arange(0, Dauer, (1/Samplerate_read))
 
+    # Hier Daten verrechnen
+
+    # TODO Daten verrechnen wie in 'data_eval' (Spannung Strommessung -> Strom, usw.)
     # Daten abspeichern
     data_length = len(measurement[0, :])
     index = list(range(1, data_length+1))
     Textdatei = {"Header": "TU Berlin - Pruefstand Scheibenlaeufer",
                  "Modul": "Modellbildung und Simulation mechatronischer Systeme",
-                 "Spalteninhalt": "Index, Zeit[s], Spg. Tachometer[V], Spg. Generator[V], Spg. Motor[V], Spg. Strommessung[V]"}
+                 "Spalteninhalt": "Index, Zeit[s], Spg. Tachometer[V], Spg. Generator[V], Spg. Motor[V], Spg. Strommessung[V], Spg. AI6[V]"}
     num_of_chans = len(Channels)
     with open("USB6009-Messung.txt", "w") as f:
         f.write(Textdatei["Header"]+"\n"+Textdatei["Modul"]+"\n")
@@ -539,39 +542,41 @@ elif mode == 8:
 
     # TODO Plot entsprechend der Anzahl an ausgelesenen Kanälen erstellen
     # Visualisierung - alle Spannungsverläufe
-    plt.subplot(2, 3, 1)
-    plt.title('Spannung Tachometer')
-    plt.plot(time_values, measurement[0, :])
-    plt.xlabel('Zeit in s')
-    plt.ylabel('Spannung in V')
-    plt.grid(True)
-    plt.subplot(2, 3, 2)
-    plt.title('Spannung Generator')
-    plt.plot(time_values, measurement[1, :])
-    plt.xlabel('Zeit in s')
-    plt.ylabel('Spannung in V')
-    plt.grid(True)
-    plt.subplot(2, 3, 3)
-    plt.title('Spannung Ansteuerung Motor')
-    plt.plot(time_values, measurement[2, :])
-    plt.xlabel('Zeit in s')
-    plt.ylabel('Spannung in V')
-    plt.grid(True)
-    plt.subplot(2, 3, 4)
-    plt.title('Spannung Strommessung')
-    plt.plot(time_values, measurement[3, :])
-    plt.xlabel('Zeit in s')
-    plt.ylabel('Spannung in V')
-    plt.grid(True)
-    plt.subplot(2, 3, 5)
-    plt.title('Spannung Kanal 6')
-    plt.plot(time_values, measurement[4, :])
-    plt.xlabel('Zeit in s')
-    plt.ylabel('Spannung in V')
-    plt.grid(True)
-    plt.tight_layout()  # damit Beschriftungen nicht überlappen
-    # plt.savefig("USB6009_Messung.pdf", bbox_inches='tight')  # pdf speichern
-    plt.show()
+    if __name__ == "__main__":
+        plt.subplot(2, 3, 1)
+        plt.title('Spannung Tachometer')
+        plt.plot(time_values, measurement[0, :])
+        plt.xlabel('Zeit in s')
+        plt.ylabel('Spannung in V')
+        plt.grid(True)
+        plt.subplot(2, 3, 2)
+        plt.title('Spannung Generator')
+        plt.plot(time_values, measurement[1, :])
+        plt.xlabel('Zeit in s')
+        plt.ylabel('Spannung in V')
+        plt.grid(True)
+        plt.subplot(2, 3, 3)
+        plt.title('Spannung Ansteuerung Motor')
+        plt.plot(time_values, measurement[2, :])
+        plt.xlabel('Zeit in s')
+        plt.ylabel('Spannung in V')
+        plt.grid(True)
+        plt.subplot(2, 3, 4)
+        plt.title('Spannung Strommessung')
+        plt.plot(time_values, measurement[3, :])
+        plt.xlabel('Zeit in s')
+        plt.ylabel('Spannung in V')
+        plt.grid(True)
+        plt.subplot(2, 3, 5)
+        plt.title('Spannung Temperaturmessung')
+        plt.plot(time_values, measurement[4, :])
+        plt.axis([0, Dauer, 0, 5])
+        plt.xlabel('Zeit in s')
+        plt.ylabel('Spannung in V')
+        plt.grid(True)
+        plt.tight_layout()  # damit Beschriftungen nicht überlappen
+        # plt.savefig("USB6009_Messung.pdf", bbox_inches='tight')  # pdf speichern
+        plt.show()
 
     # Visualisierung
     # plt.subplot(2, 1, 1)
@@ -602,10 +607,16 @@ elif mode == 9:
 
     # voltage_level 0: Low; 1: High
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+    mdt_custom.digital_output('Dev1/port0/line1', 0)
+    mdt_custom.digital_output('Dev1/port0/line2', 0)
     time.sleep(3)
     output = mdt_custom.digital_output('Dev1/port0/line0', 1)
+    mdt_custom.digital_output('Dev1/port0/line1', 1)
+    mdt_custom.digital_output('Dev1/port0/line2', 1)
     time.sleep(10)
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
+    mdt_custom.digital_output('Dev1/port0/line1', 0)
+    mdt_custom.digital_output('Dev1/port0/line2', 0)
 
     print("Output: ", output)
 

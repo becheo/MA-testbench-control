@@ -18,10 +18,15 @@ import os
 
 #  +++++++++++++++    Einstellungen    ++++++++++++++++++++++++++++++++++++++++
 filename_web = "USB6009-Messung.txt"
+
 show_specific_time_range = False
 time_start = 30.0
 time_end = 40.0
-show_running_mean = False
+
+running_mean_rpm = False
+running_mean_current = True
+current_measurement = False
+plot_all = False
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 # Dateien im Ordner auflisten:
@@ -66,14 +71,14 @@ for i in range(len(data_str)):
 # data[4]: Spannung Ansteuerung Motor [V]
 # data[5]: Spannung Strommessung [V]
 
-
-plt.title('Sannung der Strommessung')
-plt.plot(data[1], data[2])
-plt.xlabel('Zeit in s')
-plt.ylabel('Spannung in V')
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+if current_measurement == True:
+    plt.title('Sannung der Strommessung')
+    plt.plot(data[1], data[2])
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Spannung in V')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 # Daten visualisieren:
 plot_title = {1: "Spannung Tachometer [V]",
@@ -113,38 +118,39 @@ shunt = 1.8  # [Ohm]
 current = [(x/shunt) for x in data[5]]
 
 # Visualisieurung Konvertierte Werte
-plt.subplot(2, 3, 4)
-plt.title('Tachometer')
-plt.plot(data[1], rpm_generator)
-plt.xlabel('Zeit in s')
-plt.ylabel('Drehzahl in 1/min')
-plt.grid(True)
-plt.subplot(2, 3, 5)
-plt.title('Generator')
-plt.plot(data[1], data[3])
-plt.xlabel('Zeit in s')
-plt.ylabel('Spannung in V')
-plt.grid(True)
-plt.subplot(2, 3, 1)
-plt.title('Ansteuerung Motor')
-plt.plot(data[1], data[4])
-plt.xlabel('Zeit in s')
-plt.ylabel('Spannung in V')
-plt.grid(True)
-plt.subplot(2, 3, 3)
-plt.title('Strom')
-plt.plot(data[1], current)
-plt.xlabel('Zeit in s')
-plt.ylabel('Strom in A')
-plt.grid(True)
-plt.subplot(2, 3, 2)
-plt.title('Sannung am Motor')
-plt.plot(data[1], voltage_motor)
-plt.xlabel('Zeit in s')
-plt.ylabel('Spannung in V')
-plt.grid(True)
-plt.tight_layout()
-plt.show()
+if plot_all == True:
+    plt.subplot(2, 3, 4)
+    plt.title('Tachometer')
+    plt.plot(data[1], rpm_generator)
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Drehzahl in 1/min')
+    plt.grid(True)
+    plt.subplot(2, 3, 5)
+    plt.title('Generator')
+    plt.plot(data[1], data[3])
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Spannung in V')
+    plt.grid(True)
+    plt.subplot(2, 3, 1)
+    plt.title('Ansteuerung Motor')
+    plt.plot(data[1], data[4])
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Spannung in V')
+    plt.grid(True)
+    plt.subplot(2, 3, 3)
+    plt.title('Strom')
+    plt.plot(data[1], current)
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Strom in A')
+    plt.grid(True)
+    plt.subplot(2, 3, 2)
+    plt.title('Sannung am Motor')
+    plt.plot(data[1], voltage_motor)
+    plt.xlabel('Zeit in s')
+    plt.ylabel('Spannung in V')
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
 
 
 def running_mean(x, N):
@@ -152,7 +158,7 @@ def running_mean(x, N):
     return (cumsum[N:] - cumsum[:-N]) / float(N)
 
 
-if show_running_mean == True:
+if running_mean_rpm == True:
     # Graph Vgl. Drehzahl mit und ohne running mean
     for i in range(1, 2):
         figure(figsize=(15, 5))
@@ -176,9 +182,10 @@ if show_running_mean == True:
         plt.tight_layout()
         plt.show()
 
+if running_mean_current == True:
     for i in range(1, 2):
         figure(figsize=(15, 5))
-        num_of_mean_values = i*1000
+        num_of_mean_values = i*3500
         rpm_generator_filtered = running_mean(current, num_of_mean_values)
         plt.subplot(1, 2, 1)
         plt.title('Messwerte unverändert')
@@ -195,4 +202,6 @@ if show_running_mean == True:
         plt.ylabel('Strom in A')
         plt.grid(True)
         plt.tight_layout()
+        plt.savefig("Strommessung-ohne-AI6-4V_3.pdf",
+                    bbox_inches='tight')  # pdf speichern
         plt.show()
