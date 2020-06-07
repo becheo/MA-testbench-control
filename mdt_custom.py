@@ -402,7 +402,7 @@ def dataReadAndWrite(**kwargs):
                 chan = task_ai.ai_channels.add_ai_voltage_chan(
                     ai, min_val=-abs(amplitude), max_val=abs(amplitude), terminal_config=TerminalConfiguration.DIFFERENTIAL)
             # print("Kanal: {}, Einstellung Messung: {}" .format(
-                chan, chan.ai_term_cfg))
+                # chan, chan.ai_term_cfg))
             if resolution < 1 or resolution > chan.ai_resolution:
                 print(
                     f'Die Auflösung muss zwischen 1 und {chan.ai_resolution:1.0f} Bit liegen')
