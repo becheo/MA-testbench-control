@@ -4,17 +4,15 @@ import datetime
 
 import mysql.connector as mysql
 # import app_helpers
-import main
-
-# TODO datei in Ordner mit 'testbench-control' speichern.
-#  -> muss ja nur auf Datenbank zugreifen können
+import testbench_control
+import config as cfg
 
 # connect to database
 db = mysql.connect(
-    host='localhost',
-    user='root',
-    passwd='aligator3',
-    database='website'
+    host=cfg.host,
+    user=cfg.user,
+    passwd=cfg.passwd,
+    database=cfg.database
 )
 
 # open cmd
@@ -64,6 +62,8 @@ while True:
             print("                         Zeit seit letzter Messung: {}" .format(
                 str(datetime.timedelta(seconds=no_files*wait_seconds))))
         no_files = 0
+
+        # output for command prompt
         print("----------------  Neue Messung  -----------------------")
         print("Anzahl der Dateien in der Warteschlange: {}" .format(len(files)))
         # for i in range(len(files)):
@@ -76,8 +76,10 @@ while True:
         filename_now = files[0][2]
 
         # TODO hier später durch das testbench-control Programm ersetzen
-        main.count()
-        main.create_file(filename_now, id_now)
+        # main.count()
+        # main.create_file(filename_now, id_now)
+        testbench_control.run_testbench(filename_now)
+
         print("Messung beendet - Ergebnisse in Ordner 'results' gespeichert.")
         print("")
 
