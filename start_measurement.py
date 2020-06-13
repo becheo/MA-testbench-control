@@ -55,8 +55,14 @@ hlp.init_leds()
 while True:
     cursor = db.cursor()
 
-    # TODO überlegen, welche methode hier besser ist: nur erster Eintrag oder alle fetchen
-    # result = cursor.execute("SELECT * FROM queue limit 1")
+    cursor.execute("SELECT * FROM status")
+    status_information = cursor.fetchall()
+    db.commit()
+    if status_information[0][2] == 'on':
+        hlp.illumination('on')
+    else:
+        hlp.illumination('off')
+
     cursor.execute("SELECT * FROM queue")
     files = cursor.fetchall()
     db.commit()
