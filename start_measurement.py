@@ -5,6 +5,7 @@ import datetime
 import mysql.connector as mysql
 # import app_helpers
 import testbench_control
+import testbench_helpers as hlp
 import config as cfg
 
 # connect to database
@@ -45,7 +46,11 @@ db = mysql.connect(
 #   print number of entries left in database
 
 no_files = 0
-wait_seconds = 1
+wait_seconds = 1  # seconds to wait after one iteration in while loop
+
+# Initialize LEDs on testbench
+hlp.init_leds()
+
 
 while True:
     cursor = db.cursor()
@@ -75,9 +80,6 @@ while True:
         id_now = files[0][1]
         filename_now = files[0][2]
 
-        # TODO hier später durch das testbench-control Programm ersetzen
-        # main.count()
-        # main.create_file(filename_now, id_now)
         testbench_control.run_testbench(filename_now)
 
         print("Messung beendet - Ergebnisse in Ordner 'results' gespeichert.")

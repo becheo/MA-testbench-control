@@ -23,7 +23,17 @@ arr_ntc = [121.46,	    84.439,	    59.243,	    1.938,	    29.947,
            0.015139,	0.013321,   0.011754
            ]
 
-ntc_ratio = 0.79
+# ntc_ratio = 0.79
+# ntc_ratio = 2.2/2.5
+
+U_Rt = 2.0  # measured value
+R1 = 1000
+U_supply = 2.5
+Rt = (R1*(U_Rt/U_supply))/(1-(U_Rt/U_supply))
+print("Rt: {}" .format(Rt))
+ntc_ratio = Rt/10000
+print("ntc-ratio {}" .format(ntc_ratio))
+
 temp = np.interp(ntc_ratio, np.flip(arr_ntc), np.flip(arr_temp))
 # temp = np.interp(ntc_ratio, arr_temp, arr_ntc)
 print("Temperature: {}" .format(temp))

@@ -18,6 +18,7 @@ import pandas
 
 import mdt_custom  # local modules
 import config as cfg
+import testbench_helpers as hlp
 
 # TODO FUnktionen usw. auf 5 Kanäle anpassen (Channels, Textdatei, plots, ...)
 
@@ -41,40 +42,31 @@ def run_testbench(filename):
     # TODO verschiedene Amplituden für verschiedene Kanäle verwenden
     # TODO verschiedene Auflösungen (resolution) für verschiedene Kanäle verwenden
 
-    # Spannungsvorgabe
-    # Dateien im Ordner auflisten:
-    # mypath = os.listdir()
-    # for i in range(0, len(mypath)):
-    #     if filename_web == mypath[i]:
-    #         filename = mypath[i]
-
     filepath = cfg.folder_upload + '/' + filename
 
-    # # Datei auslesen:
-    # print("Folgende Datei wird geöffnet: ", filepath)
-    # with open(filepath, "r") as f:
-    #     buffer_textfile = f.read().splitlines()
-    #     f.close()
-
-    csv_time = 'time'
-    csv_voltage = 'voltage'
     # read out csv file, skip header rows
     data = pandas.read_csv(filepath)
     data_AO = data['voltage'].tolist()
 
-    # data_AO = [float(i) for i in buffer_textfile]  # Konvertierung in float
-    Dauer = (len(data_AO)/Samplerate_write)  # TODO englisches Wort verwenden
-    # Dauer = 20  # [s]
+    duration = (len(data_AO)/Samplerate_write)
 
     SamplesPerChunk = int(Samplerate_read/Samplerate_write)
-    samples = int(Samplerate_read*Dauer)
+    samples = int(Samplerate_read*duration)
     chunks = math.ceil(samples/SamplesPerChunk)
 
     print("Anzahl an Chunks: ", chunks, ";    Anzahl Samples insgesamt: ",
-          samples, ";    Ausgabefrequenz [Hz]: ", (chunks/Dauer), ";    Dauer [s]: ", Dauer)
+          samples, ";    Ausgabefrequenz [Hz]: ", (chunks/duration), ";    Dauer [s]: ", duration)
+
+    for i in range(10):
+        hlp.status_led('blue')
+        time.sleep(1)
+        hlp.status_led('off')
+        time.sleep(1)
+
+    hlp.status_led('red')
 
     # +++++++++++++++++++++++    MAIN    ++++++++++++++++++++++++++++++++++++++
-    measurement = mdt_custom.dataReadAndWrite(amplitude=10.0, samplingRate=Samplerate_read, duration=Dauer,
+    measurement = mdt_custom.dataReadAndWrite(amplitude=10.0, samplingRate=Samplerate_read, duration=duration,
                                               channels=Channels, resolution=13, outType='Volt', samplesPerChunk=SamplesPerChunk, data_ao=data_AO)
     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -83,11 +75,14 @@ def run_testbench(filename):
     # Zeit: verschiedene Methoden möglich:
     # 1: Nach Messung einfach "berechnen" anhand der eingestellten Parameter (nicht wirklich real gemessen)
     # 2: In Schleife Zeit in array schreiben (nicht für jeden Datenpunkt möglich, da immer viele Samples auf einmal gelesenw werden in einer Funktion)
-    time_values = np.arange(0, Dauer, (1/Samplerate_read))
+    time_values = np.arange(0, duration, (1/Samplerate_read))
 
     # Hier Daten verrechnen
 
     # TODO Daten verrechnen wie in 'data_eval' (Spannung Strommessung -> Strom, usw.)
+    rpm = hlp.calculate_rpm(measurement[0])
+    current = hlp.calculate_current(measurement[3])
+    temp = hlp.calculate_temperature(measurement[4])
     # Daten abspeichern
     result_path = cfg.folder_results + '/' + 'results-' + filename
 
@@ -95,31 +90,34 @@ def run_testbench(filename):
     index = list(range(1, data_length+1))
     Textdatei = {"Header": "TU Berlin - Pruefstand Scheibenlaeufer",
                  "Modul": "Modellbildung und Simulation mechatronischer Systeme",
-                 "Spalteninhalt": "Index, Zeit[s], Spg. Tachometer[V], Spg. Generator[V], Spg. Motor[V], Spg. Strommessung[V], Spg. AI6[V]"}
+                 "Spalteninhalt": "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[°C]"}
     num_of_chans = len(Channels)
     # with open("USB6009-Messung.txt", "w") as f:
     with open(result_path, "w") as f:
-        f.write(
-            "Index,Zeit[s],Spg. Tachometer[V],Spg. Generator[V],Spg. Motor[V],Spg. Strommessung[V],Spg. AI6[V]\n")
+        # f.write(
+        #     "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[°C]\n")
         # f.write(Textdatei["Header"]+"\n"+Textdatei["Modul"]+"\n")
         # f.write("Created On {}\n\n" .format(datetime.datetime.now()))
         # f.write("Anzahl an Chunks: {}; Anzahl Samples insgesamt: {}; Abtastfrequenz[Hz]: {}; Ausgabefrequenz[Hz]: {}; Dauer[s]: {} \n\n" .format(
         # chunks, samples, Samplerate_read, (chunks/Dauer), Dauer))
-        # f.write(Textdatei["Spalteninhalt"] + "\n")
+        f.write(Textdatei["Spalteninhalt"] + "\n")
         for i in range(0, data_length, 1):
             f.write("{}" .format(index[i]))
             f.write(", {:.4f}" .format(time_values[i]))
-            f.write(", {:.4f}" .format(measurement[0, i]))
+            f.write(", {:.4f}" .format(rpm[i]))
             if num_of_chans >= 2:
                 f.write(", {:.4f}" .format(measurement[1, i]))
             if num_of_chans >= 3:
                 f.write(", {:.4f}" .format(measurement[2, i]))
             if num_of_chans >= 4:
-                f.write(", {:.4f}" .format(measurement[3, i]))
+                f.write(", {:.4f}" .format(current[i]))
             if num_of_chans >= 5:
-                f.write(", {:.4f}" .format(measurement[4, i]))
+                # f.write(", {:.4f}" .format(measurement[4, i]))
+                f.write(", {:.4f}" .format(temp[i]))
             f.write("\n")
         f.close()
+
+        hlp.status_led('green')
 
     # Visualisierung - alle Spannungsverläufe
     if __name__ == "__main__":
@@ -151,7 +149,7 @@ def run_testbench(filename):
         plt.subplot(2, 3, 5)
         plt.title('Spannung Temperaturmessung')
         plt.plot(time_values, measurement[4, :])
-        plt.axis([0, Dauer, 0, 5])
+        plt.axis([0, duration, 0, 5])
         plt.xlabel('Zeit in s')
         plt.ylabel('Spannung in V')
         plt.grid(True)

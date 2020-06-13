@@ -25,7 +25,7 @@ import mdt_custom  # local modules
 # from os.path import isfile, join
 
 
-mode = 3
+mode = 9
 # mode 1: nur lesen
 # mode 2: nur schreiben - mehrere Samples
 # mode 3: nur schreiben - ein sample
@@ -606,6 +606,8 @@ elif mode == 9:
     # mode 9: Digitalen Ausgang ansteuern
 
     # voltage_level 0: Low; 1: High
+    print("LED program start")
+    # LED white
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
     mdt_custom.digital_output('Dev1/port0/line1', 0)
     mdt_custom.digital_output('Dev1/port0/line2', 0)
@@ -613,12 +615,38 @@ elif mode == 9:
     output = mdt_custom.digital_output('Dev1/port0/line0', 1)
     mdt_custom.digital_output('Dev1/port0/line1', 1)
     mdt_custom.digital_output('Dev1/port0/line2', 1)
-    time.sleep(10)
+    time.sleep(5)
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
     mdt_custom.digital_output('Dev1/port0/line1', 0)
     mdt_custom.digital_output('Dev1/port0/line2', 0)
 
     print("Output: ", output)
+
+    time.sleep(3)
+
+    # LED RGB
+    # P0.5: green, P0.6: red, P0.7: blue
+    mdt_custom.digital_output('Dev1/port0/line5', 0)
+    mdt_custom.digital_output('Dev1/port0/line6', 0)
+    mdt_custom.digital_output('Dev1/port0/line7', 0)
+    time.sleep(3)
+    mdt_custom.digital_output('Dev1/port0/line5', 1)
+    mdt_custom.digital_output('Dev1/port0/line6', 0)
+    mdt_custom.digital_output('Dev1/port0/line7', 0)
+    time.sleep(5)
+    mdt_custom.digital_output('Dev1/port0/line5', 0)
+    mdt_custom.digital_output('Dev1/port0/line6', 1)
+    mdt_custom.digital_output('Dev1/port0/line7', 0)
+    time.sleep(5)
+    mdt_custom.digital_output('Dev1/port0/line5', 0)
+    mdt_custom.digital_output('Dev1/port0/line6', 0)
+    mdt_custom.digital_output('Dev1/port0/line7', 1)
+
+    time.sleep(5)
+    mdt_custom.digital_output('Dev1/port0/line5', 0)
+    mdt_custom.digital_output('Dev1/port0/line6', 0)
+    mdt_custom.digital_output('Dev1/port0/line7', 0)
+
 
 else:
     print("Bitte korrekten Modus auswählen")
