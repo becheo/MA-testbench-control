@@ -90,7 +90,7 @@ def run_testbench(filename):
     index = list(range(1, data_length+1))
     Textdatei = {"Header": "TU Berlin - Pruefstand Scheibenlaeufer",
                  "Modul": "Modellbildung und Simulation mechatronischer Systeme",
-                 "Spalteninhalt": "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[°C]"}
+                 "Spalteninhalt": "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[C]"}
     num_of_chans = len(Channels)
     # with open("USB6009-Messung.txt", "w") as f:
     with open(result_path, "w") as f:
