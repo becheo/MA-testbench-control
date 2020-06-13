@@ -77,13 +77,13 @@ def run_testbench(filename):
     # 2: In Schleife Zeit in array schreiben (nicht für jeden Datenpunkt möglich, da immer viele Samples auf einmal gelesenw werden in einer Funktion)
     time_values = np.arange(0, duration, (1/Samplerate_read))
 
-    # Hier Daten verrechnen
-
-    # TODO Daten verrechnen wie in 'data_eval' (Spannung Strommessung -> Strom, usw.)
+    # Calculation of data out of voltage values
     rpm = hlp.calculate_rpm(measurement[0])
     current = hlp.calculate_current(measurement[3])
     temp = hlp.calculate_temperature(measurement[4])
-    # Daten abspeichern
+    motor_voltage = hlp.calculate_motor_voltage(measurement[2], measurement[3])
+
+    # save results to file
     result_path = cfg.folder_results + '/' + 'results-' + filename
 
     data_length = len(measurement[0, :])
@@ -108,7 +108,7 @@ def run_testbench(filename):
             if num_of_chans >= 2:
                 f.write(", {:.4f}" .format(measurement[1, i]))
             if num_of_chans >= 3:
-                f.write(", {:.4f}" .format(measurement[2, i]))
+                f.write(", {:.4f}" .format(motor_voltage[i]))
             if num_of_chans >= 4:
                 f.write(", {:.4f}" .format(current[i]))
             if num_of_chans >= 5:

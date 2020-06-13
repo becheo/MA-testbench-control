@@ -85,6 +85,22 @@ def calculate_rpm(data):
     return rpm_generator
 
 
+def calculate_motor_voltage(data, current_data):
+    """Calculate real voltage from motor out of voltage divider."""
+
+    R1 = 36  # [Ohm]
+    R2 = 22  # [Ohm]
+
+    real_voltage = [x*(R1+R2)/R2 for x in data]
+
+    voltage_motor = np.array([], dtype=np.float64)
+    for i in range(len(data)):
+        voltage_buffer = real_voltage[i]-current_data[i]
+        voltage_motor = np.append(voltage_motor, voltage_buffer)
+
+    return voltage_motor
+
+
 def illumination(status):
     """Turn on/off light to illuminate the testbench.
 
