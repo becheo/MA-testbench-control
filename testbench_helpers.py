@@ -60,9 +60,8 @@ def calculate_temperature(data):
     temp = [np.interp(ntc_ratio, np.flip(arr_ntc), np.flip(arr_temp))
             for ntc_ratio in ntc_ratio_array]
 
-    # num_of_mean_values = 100
-    # temp_filtered = running_mean(
-    #     temp, num_of_mean_values)
+    num_of_mean_values = 2000  # 2000 Hz -> 1 mean over 1 second
+    temp = running_mean(temp, num_of_mean_values)
 
     return temp
 
