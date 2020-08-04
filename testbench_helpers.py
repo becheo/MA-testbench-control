@@ -99,11 +99,8 @@ def calculate_rpm(data):
 def calculate_motor_voltage(data, current_data):
     """Calculate real voltage from motor out of voltage divider."""
 
-    # R1 = 36  # [Ohm]
-    # R2 = 22  # [Ohm]
-
-    R1 = 15.8
-    R2 = 19  # [Ohm]
+    R1 = 34.2  # [Ohm]
+    R2 = 22  # [Ohm]
 
     real_voltage = [x*(R1+R2)/R2 for x in data]
 
