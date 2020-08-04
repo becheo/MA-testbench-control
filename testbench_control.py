@@ -56,8 +56,11 @@ def run_testbench(filename):
     hlp.status_led('red')
 
     # +++++++++++++++++++++++    MAIN    ++++++++++++++++++++++++++++++++++++++
-    measurement = mdt_custom.dataReadAndWrite(amplitude=10.0, samplingRate=Samplerate_read, duration=duration,
-                                              channels=Channels, resolution=13, outType='Volt', samplesPerChunk=SamplesPerChunk, data_ao=data_AO)
+    try:
+        measurement = mdt_custom.dataReadAndWrite(amplitude=10.0, samplingRate=Samplerate_read, duration=duration,
+                                                  channels=Channels, resolution=13, outType='Volt', samplesPerChunk=SamplesPerChunk, data_ao=data_AO)
+    except:
+        print("Es ist ein Fehler aufgetreten. Bitte überprüfen Sie ob alle benötigten Verbindungen korrekt hergestellt wurden.")
     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     print("Anzahl Daten ausgelesen (pro Kanal): ", len(measurement[0]))
@@ -80,22 +83,25 @@ def run_testbench(filename):
                  "Spalteninhalt": "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[C]"}
     num_of_chans = len(Channels)
 
-    with open(result_path, "w") as f:
-        f.write(Textdatei["Spalteninhalt"] + "\n")
-        for i in range(0, data_length, 1):
-            f.write("{}" .format(index[i]))
-            f.write(", {:.4f}" .format(time_values[i]))
-            f.write(", {:.4f}" .format(rpm[i]))
-            if num_of_chans >= 2:
-                f.write(", {:.4f}" .format(measurement[1, i]))
-            if num_of_chans >= 3:
-                f.write(", {:.4f}" .format(motor_voltage[i]))
-            if num_of_chans >= 4:
-                f.write(", {:.4f}" .format(current[i]))
-            if num_of_chans >= 5:
-                f.write(", {:.4f}" .format(temp[i]))
-            f.write("\n")
-        f.close()
+    try:
+        with open(result_path, "w") as f:
+            f.write(Textdatei["Spalteninhalt"] + "\n")
+            for i in range(0, data_length, 1):
+                f.write("{}" .format(index[i]))
+                f.write(", {:.4f}" .format(time_values[i]))
+                f.write(", {:.4f}" .format(rpm[i]))
+                if num_of_chans >= 2:
+                    f.write(", {:.4f}" .format(measurement[1, i]))
+                if num_of_chans >= 3:
+                    f.write(", {:.4f}" .format(motor_voltage[i]))
+                if num_of_chans >= 4:
+                    f.write(", {:.4f}" .format(current[i]))
+                if num_of_chans >= 5:
+                    f.write(", {:.4f}" .format(temp[i]))
+                f.write("\n")
+            f.close()
+    except:
+        print("Es ist ein Fehler bei der Speicherung der Daten aufgetreten. Bitte überprüfen Sie die Ordnerstrukturen.")
 
         hlp.status_led('green')
 
