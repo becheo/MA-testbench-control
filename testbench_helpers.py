@@ -70,7 +70,7 @@ def calculate_temperature(data):
 def calculate_current(data):
     """Calculate Current out of measured voltage at shunt."""
 
-    shunt = 1.8  # [Ohm]
+    shunt = 1.2  # [Ohm]
     current = [(x/shunt) for x in data]
 
     return current
