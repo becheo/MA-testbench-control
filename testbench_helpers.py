@@ -59,9 +59,10 @@ def calculate_temperature(data):
                0.015139,	0.013321,   0.011754
                ]
 
-    R1 = 1000  # [Ohm]; resistor in series
-    U_supply = 2.5  # [V]
+    R1 = 935  # [Ohm]; resistor in series
+    U_supply = 2.496  # [V]
 
+    # calculate ntc resistor out of measured voltage
     Rt_array = [(R1*(U_Rt/U_supply))/(1-(U_Rt/U_supply)) for U_Rt in data]
 
     # Rt = (R1*(U_Rt/U_supply))/(1-(U_Rt/U_supply))
