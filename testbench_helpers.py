@@ -59,7 +59,7 @@ def calculate_temperature(data):
                0.015139,	0.013321,   0.011754
                ]
 
-    R1 = 935  # [Ohm]; resistor in series to ntc
+    R1 = 995  # [Ohm]; resistor in series to ntc
     U_supply = 2.496  # [V] supply voltage from USB6009
 
     # calculate ntc resistor out of measured voltage
