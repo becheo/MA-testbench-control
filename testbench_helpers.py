@@ -11,7 +11,12 @@ def running_mean(x, N):
     # return (cumsum[N:] - cumsum[:-N]) / float(N)
 
     # return np.convolve(x, np.ones((N,))/N)[(N-1):]
-    return np.convolve(x, np.ones((N,))/N, mode='valid')
+    # return np.convolve(x, np.ones((N,))/N, mode='valid')
+
+    # y = np.convolve(N/N.sum(), x, mode='same')
+    # return y[window_len-1:-(window_len-1)]
+
+    return np.smooth(x, window="flat")
 
 
 def eliminate_negative_values(data):
