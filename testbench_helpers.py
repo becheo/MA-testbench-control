@@ -2,6 +2,7 @@ import time
 # import os
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.signal import savgol_filter
 
 import mdt_custom
 
@@ -16,7 +17,9 @@ def running_mean(x, N):
     # y = np.convolve(N/N.sum(), x, mode='same')
     # return y[window_len-1:-(window_len-1)]
 
-    return np.smooth(x, window="flat")
+    # return np.smooth(x, window="flat")
+    temp_smooth = savgol_filter(x, N, 1)
+    return temp_smooth
 
 
 def eliminate_negative_values(data):
@@ -68,7 +71,7 @@ def calculate_temperature(data):
     temp = [np.interp(ntc_ratio, np.flip(arr_ntc), np.flip(arr_temp))
             for ntc_ratio in ntc_ratio_array]
 
-    num_of_mean_values = 2000  # 2000 Hz -> 1 mean over 1 second
+    num_of_mean_values = 2001  # 2000 Hz -> mean over 1 second
     temp = running_mean(temp, num_of_mean_values)
 
     return temp
