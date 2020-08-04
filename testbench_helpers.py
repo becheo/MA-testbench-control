@@ -8,18 +8,18 @@ import mdt_custom
 
 
 def running_mean(x, N):
-    # cumsum = np.cumsum(np.insert(x, 0, 0))
-    # return (cumsum[N:] - cumsum[:-N]) / float(N)
+    """Calculate runnin mean for measured data.
 
-    # return np.convolve(x, np.ones((N,))/N)[(N-1):]
-    # return np.convolve(x, np.ones((N,))/N, mode='valid')
+    Parameters:
+        x (array): measured data array.
+        N (int): window for mean calculation
 
-    # y = np.convolve(N/N.sum(), x, mode='same')
-    # return y[window_len-1:-(window_len-1)]
+    Returns:
+        data_smooth: running mean of data.
+    """
 
-    # return np.smooth(x, window="flat")
-    temp_smooth = savgol_filter(x, N, 1)
-    return temp_smooth
+    data_smooth = savgol_filter(x, N, 1)
+    return data_smooth
 
 
 def eliminate_negative_values(data):
@@ -83,9 +83,6 @@ def calculate_current(data):
 
     shunt = 1.2  # [Ohm]
     current = [(x/shunt) for x in data]
-
-    num_of_mean_values = 501  #
-    current = running_mean(current, num_of_mean_values)
 
     return current
 
