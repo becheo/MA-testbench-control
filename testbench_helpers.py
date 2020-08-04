@@ -59,15 +59,15 @@ def calculate_temperature(data):
                0.015139,	0.013321,   0.011754
                ]
 
-    R1 = 935  # [Ohm]; resistor in series
-    U_supply = 2.496  # [V]
+    R1 = 935  # [Ohm]; resistor in series to ntc
+    U_supply = 2.496  # [V] supply voltage from USB6009
 
     # calculate ntc resistor out of measured voltage
     Rt_array = [(R1*(U_Rt/U_supply))/(1-(U_Rt/U_supply)) for U_Rt in data]
 
     # Rt = (R1*(U_Rt/U_supply))/(1-(U_Rt/U_supply))
 
-    ntc_ratio_array = [Rt/10000 for Rt in Rt_array]
+    ntc_ratio_array = [Rt/9000 for Rt in Rt_array]
 
     temp = [np.interp(ntc_ratio, np.flip(arr_ntc), np.flip(arr_temp))
             for ntc_ratio in ntc_ratio_array]
