@@ -84,6 +84,9 @@ def calculate_current(data):
     shunt = 1.2  # [Ohm]
     current = [(x/shunt) for x in data]
 
+    num_of_mean_values = 501  #
+    current = running_mean(current, num_of_mean_values)
+
     return current
 
 
@@ -99,7 +102,7 @@ def calculate_rpm(data):
 def calculate_motor_voltage(data, current_data):
     """Calculate real voltage from motor out of voltage divider."""
 
-    R1 = 34.6  # [Ohm]
+    R1 = 34.9  # [Ohm]
     R2 = 21.8  # [Ohm]
 
     real_voltage = [x*(R1+R2)/R2 for x in data]
