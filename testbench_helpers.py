@@ -7,8 +7,10 @@ import mdt_custom
 
 
 def running_mean(x, N):
-    cumsum = np.cumsum(np.insert(x, 0, 0))
-    return (cumsum[N:] - cumsum[:-N]) / float(N)
+    # cumsum = np.cumsum(np.insert(x, 0, 0))
+    # return (cumsum[N:] - cumsum[:-N]) / float(N)
+
+    return np.convolve(x, np.ones((N,))/N)[(N-1):]
 
 
 def eliminate_negative_values(data):
