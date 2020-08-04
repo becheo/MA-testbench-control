@@ -615,7 +615,7 @@ elif mode == 9:
     output = mdt_custom.digital_output('Dev1/port0/line0', 1)
     mdt_custom.digital_output('Dev1/port0/line1', 1)
     mdt_custom.digital_output('Dev1/port0/line2', 1)
-    time.sleep(5)
+    time.sleep(60)
     output = mdt_custom.digital_output('Dev1/port0/line0', 0)
     mdt_custom.digital_output('Dev1/port0/line1', 0)
     mdt_custom.digital_output('Dev1/port0/line2', 0)

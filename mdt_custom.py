@@ -320,7 +320,6 @@ def dataReadAndWrite(**kwargs):
 
     Auswahl zwischen einem Wert (Sprung) oder beliebigem Verlauf von Werten.
     Achtung: vorgegebener Verlauf nur soweit möglich wie von der E-Maschine umsetzbar
-    ... noch weiter ausführen
 
     Args:
         :param voltage: ...
@@ -349,8 +348,6 @@ def dataReadAndWrite(**kwargs):
     samplingRate = kwargs['samplingRate']
     duration = kwargs['duration']
     channels = kwargs['channels']
-    # TODO evtl resolution nur für Kanäle, die gegen Masse messen sollen
-    # auf 13 Bit setzen, die restlichen auf 14 Bit
     resolution = kwargs['resolution']
     outType = kwargs['outType']
     samplesPerChunk = kwargs['samplesPerChunk']
@@ -363,8 +360,7 @@ def dataReadAndWrite(**kwargs):
         if type(continues) != bool:
             print('continues muss vom Typ bool sein')
             return None
-    # TODO überprüfen ob Wert wieder von 8 auf 4 geändert werden muss
-    # 8: Für Messungen gegen Masse; 4: 4 differentielle Messungen
+
     if not all(i < 8 for i in channels):
         print('Mögliche Kanäle sind 0 bis 4')
         return None
@@ -457,17 +453,9 @@ def dataReadAndWrite(**kwargs):
                      samplesLeft] = lastDataChunk
             samplesLeft -= samplesPerChunk
             # Ausgabe
-            # TODO aktuelle Drehzahl ergänzen, überprüfen ob diese Daten an Website übergeben werden können
             # Ausgabe bei 5 Messkanälen (mit Temperaturmessung):
             print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Spg. Temp.: {:.3f};    Drehzahl: {:.0f}" .format(
                 time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], data[4][i*samplesPerChunk], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
-            # Ausgabe bei 5 Messkanälen (mit AI6 als Messeingang):
-            # print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Spg. AI6: {:.3f};    Drehzahl: {:.0f}" .format(
-            #     time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], data[4][i*samplesPerChunk], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
-
-            # Ausgabe bei 4 Messkanälen:
-            # print("Messdauer: {:.0f} Sekunden;    aktuelle Spannung am Motor: {:.3f};    Spannung Analoger Ausgang {:.3f};    Drehzahl: {:.0f}" .format(
-            #     time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
 
         end_time = time.time() - start_time
         print("\nDauer der Messung: ", end_time)
@@ -484,9 +472,6 @@ def dataReadAndWrite(**kwargs):
         data = np.digitize(data, bins)
         if outtType == 'Volt':
             data = data*u_lsb-amplitude
-
-        # print(
-        #     f"Die Messung wurde durchgeführt mit {dev.name:s} \n Messbereich: +/-{amplitude:1.2f} Volt\n samplingRate: {samplingRate:1.1f} Hz\n Messdauer: {duration:1.3f} s\n Auflösung: {resolution:d} bit\n Ausgabe in: {outtType:s}")
 
     return data
 
@@ -527,13 +512,3 @@ def digital_output(channel_name, voltage_level):
         task.stop()
 
     return dev
-
-    # ao = dev.ao_physical_chans.channel_names[0]
-    # chan_output = task.ao_channels.add_ao_voltage_chan(
-    #     ao, min_val=0, max_val=5)
-    # data = voltage
-
-    # stream = task.out_stream
-    # analogSingleChannelWriter = nidaqmx.stream_writers.AnalogSingleChannelWriter(
-    #     stream)
-    # analogSingleChannelWriter.write_one_sample(data)

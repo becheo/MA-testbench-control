@@ -20,8 +20,6 @@ import mdt_custom  # local modules
 import config as cfg
 import testbench_helpers as hlp
 
-# TODO FUnktionen usw. auf 5 Kanäle anpassen (Channels, Textdatei, plots, ...)
-
 
 def run_testbench(filename):
     """
@@ -29,22 +27,14 @@ def run_testbench(filename):
     in a csv file which will be shown on the website.
     """
 
-    # Datei die ausgelesen werden soll
-    # filename_web = "Spannungsvorgabe.txt"
-
     # Parameter
     Samplerate_read = 2000  # [Hz] -> Muss immer vielfaches von 'write' sein
-    # TODO Samplerate_write überprüfen: Bei welcher samplerate wird Messdauer eingehalten?
-    # -> Am 03.03.20 Probleme bei 500 Hz: Messung dauerte länger als sie sollte (19 statt 17 Sekunden)
     Samplerate_write = 250  # [Hz] -> muss gleich wie in 'Ersteller'-Datei sein
     Channels = [0, 1, 2, 3, 6]
 
-    # TODO verschiedene Amplituden für verschiedene Kanäle verwenden
-    # TODO verschiedene Auflösungen (resolution) für verschiedene Kanäle verwenden
-
     filepath = cfg.folder_upload + '/' + filename
 
-    # read out csv file, skip header rows
+    # read out csv file
     data = pandas.read_csv(filepath)
     data_AO = data['voltage'].tolist()
 
@@ -72,9 +62,6 @@ def run_testbench(filename):
 
     print("Anzahl Daten ausgelesen (pro Kanal): ", len(measurement[0]))
 
-    # Zeit: verschiedene Methoden möglich:
-    # 1: Nach Messung einfach "berechnen" anhand der eingestellten Parameter (nicht wirklich real gemessen)
-    # 2: In Schleife Zeit in array schreiben (nicht für jeden Datenpunkt möglich, da immer viele Samples auf einmal gelesenw werden in einer Funktion)
     time_values = np.arange(0, duration, (1/Samplerate_read))
 
     # Calculation of data out of voltage values
@@ -92,14 +79,8 @@ def run_testbench(filename):
                  "Modul": "Modellbildung und Simulation mechatronischer Systeme",
                  "Spalteninhalt": "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[C]"}
     num_of_chans = len(Channels)
-    # with open("USB6009-Messung.txt", "w") as f:
+
     with open(result_path, "w") as f:
-        # f.write(
-        #     "Index,Zeit[s],Drehzahl[1/min],Generatorspannung[V],Motorspannung[V],Strommessung[A],Temperatur[°C]\n")
-        # f.write(Textdatei["Header"]+"\n"+Textdatei["Modul"]+"\n")
-        # f.write("Created On {}\n\n" .format(datetime.datetime.now()))
-        # f.write("Anzahl an Chunks: {}; Anzahl Samples insgesamt: {}; Abtastfrequenz[Hz]: {}; Ausgabefrequenz[Hz]: {}; Dauer[s]: {} \n\n" .format(
-        # chunks, samples, Samplerate_read, (chunks/Dauer), Dauer))
         f.write(Textdatei["Spalteninhalt"] + "\n")
         for i in range(0, data_length, 1):
             f.write("{}" .format(index[i]))
@@ -112,7 +93,6 @@ def run_testbench(filename):
             if num_of_chans >= 4:
                 f.write(", {:.4f}" .format(current[i]))
             if num_of_chans >= 5:
-                # f.write(", {:.4f}" .format(measurement[4, i]))
                 f.write(", {:.4f}" .format(temp[i]))
             f.write("\n")
         f.close()
@@ -121,7 +101,6 @@ def run_testbench(filename):
 
     # Visualisierung - alle Spannungsverläufe
     if __name__ == "__main__":
-        # TODO Plot entsprechend der Anzahl an ausgelesenen Kanälen erstellen
         plt.subplot(2, 3, 1)
         plt.title('Spannung Tachometer')
         plt.plot(time_values, measurement[0, :])

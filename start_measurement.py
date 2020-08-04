@@ -3,7 +3,6 @@ import time
 import datetime
 
 import mysql.connector as mysql
-# import app_helpers
 import testbench_control
 import testbench_helpers as hlp
 import config as cfg
@@ -16,34 +15,6 @@ db = mysql.connect(
     database=cfg.database
 )
 
-# open cmd
-# proc = subprocess.Popen('cmd.exe', stdin=subprocess.PIPE)
-
-# activate conda prompt out of cmd
-# proc.stdin.write(
-#     b"/K C:/Users/Oliver/Anaconda3/Scripts/activate.bat C:/Users/Oliver/Anaconda3\n")
-
-# start the pyhton file running the test
-# TODO conda activate virtualenv to the final virtualenv name (maybe: testbench)
-# proc.stdin.write(
-#     b"cd C:/Users/Oliver/Desktop/Masterarbeit/03_Software/testbench-control && python testbench_control.py\n")
-
-# temporary file link for testing
-# proc.stdin.write(
-#     b"cd C:/Users/Oliver/Desktop/Masterarbeit/03_Software/z_Tutorials_Beispielprogramme/test-exe && python main.py\n")
-
-# -----------------------------------------------------------------------------------
-# possible programm outline:
-
-# check database for entries
-# while true:
-#   check database for entries
-#   get entry with lowest id from database and store filename in variable
-#   print data form entry (name of file, id) and seperator(\n ----- \n)
-#   run script 'testbench-control.py' with that filename as parameter
-#   delete entry that was fetched from database
-#   update entries (check database for entries)
-#   print number of entries left in database
 
 no_files = 0
 wait_seconds = 1  # seconds to wait after one iteration in while loop
@@ -77,8 +48,6 @@ while True:
         # output for command prompt
         print("----------------  Neue Messung  -----------------------")
         print("Anzahl der Dateien in der Warteschlange: {}" .format(len(files)))
-        # for i in range(len(files)):
-        #     print(files[i])
 
         print("Folgende Datei wird getestet: {}" .format(files[0]))
         # database columns: | queueID | id | filename | add_date |
@@ -93,8 +62,6 @@ while True:
 
         # delete entry from database
         cursor = db.cursor()
-        # TODO überlegen, welche id hier genommen werden soll bzw. auch, ob es die Möglichkeit
-        # geben soll einen Test nochmal zu starten, obwohl er schon durchgeführt wurde
         cursor.execute("DELETE FROM queue WHERE queueID = %s", [queueID_now])
         db.commit()
         cursor.close()
@@ -111,9 +78,5 @@ while True:
         print("Keine Dateien vorhanden, Zeit seit letzter Messung: {}     (zum Beenden: Strg+C)" .format(
             str(datetime.timedelta(seconds=no_files*wait_seconds))), end='\r')
         no_files = no_files + 1
-
-    # TODO alle 10 min oder so: Kamerabild auf Helligkeit überprüfen, je
-    #   nachdem wie hell die LEDs einschalten oder nicht
-    #   Strategie fuer das ausschalten ueberlegen
 
     time.sleep(wait_seconds)
