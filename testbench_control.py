@@ -103,7 +103,7 @@ def run_testbench(filename):
     except:
         print("Es ist ein Fehler bei der Speicherung der Daten aufgetreten. Bitte überprüfen Sie die Ordnerstrukturen.")
 
-        hlp.status_led('green')
+    hlp.status_led('green')
 
     # Visualisierung - alle Spannungsverläufe
     if __name__ == "__main__":
