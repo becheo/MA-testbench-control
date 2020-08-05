@@ -44,8 +44,8 @@ def run_testbench(filename):
     samples = int(Samplerate_read*duration)
     chunks = math.ceil(samples/SamplesPerChunk)
 
-    print("Anzahl an Chunks: ", chunks, ";    Anzahl Samples insgesamt: ",
-          samples, ";    Ausgabefrequenz [Hz]: ", (chunks/duration), ";    Dauer [s]: ", duration)
+    print("Ausgabefrequenz [Hz]: ", (chunks/duration),
+          ";    Dauer [s]: ", duration)
 
     for i in range(10):
         hlp.status_led('blue')

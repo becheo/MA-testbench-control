@@ -49,7 +49,7 @@ while True:
         print("----------------  Neue Messung  -----------------------")
         print("Anzahl der Dateien in der Warteschlange: {}" .format(len(files)))
 
-        print("Folgende Datei wird getestet: {}" .format(files[0]))
+        print("Folgende Datei wird getestet: {}" .format(files[0][2]))
         # database columns: | queueID | id | filename | add_date |
         queueID_now = files[0][0]
         id_now = files[0][1]
