@@ -454,7 +454,7 @@ def dataReadAndWrite(**kwargs):
             samplesLeft -= samplesPerChunk
             # Ausgabe
             # Ausgabe bei 5 Messkanälen (mit Temperaturmessung):
-            print("Messdauer: {:.0f} Sekunden\n Aktuelle Spannung am Motor: {:.3f}\n Spannung am analogen Ausgang {:.3f}\n Drehzahl: {:.0f}" .format(
+            print("Messdauer [s]: {:.0f};  Motorspannung [V]: {:.3f};  Spannung analoger Ausgang [V]: {:.3f};  Drehzahl [1/min]: {:.0f}" .format(
                 time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
 
         end_time = time.time() - start_time
