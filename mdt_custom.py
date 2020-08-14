@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 """
+Steuerung Prüfstand Scheibenläufermotor
+Masterarbeit: Entwicklung eines vernetzten Prüftands zur web-basierten
+              Validierung und Parametrierung von Simulationsmodellen
+
+Orginalskript mit "dataRead"-Funktion:
 Created on Thu Feb 15 10:36:14 2018
 
 @author: Hauke Brunken
-
-Revision History:
-Date - Author - Content
-------------------------
-Jan 10 2020 - Oliver Becher - function 'dataWrite' added to script
 """
 
 import time  # built-in modules
@@ -316,16 +316,22 @@ def dataWrite(voltage, channels, duration, samplingRate, mode):
 
 
 def dataReadAndWrite(**kwargs):
-    """Schreibt und liest Daten mit analogen Ein- und Ausgängen.
+    """Reads and writes data with analog in- and output.
 
-    Auswahl zwischen einem Wert (Sprung) oder beliebigem Verlauf von Werten.
-    Achtung: vorgegebener Verlauf nur soweit möglich wie von der E-Maschine umsetzbar
+    Notice that voltage levels are bounded to capabilites of device.
 
-    Args:
-        :param voltage: ...
-        ...
+    Parameters:
+        amplitude:      voltage amplitude to be measured.
+        samplingRate:   Samplerate in Hz.
+        duration:       Duration of the test that is going to be performed.
+        channels:       Channels of USB6009 that should be measured during test.
+        resolution:     Resolution for voltage measurement.
+        outType:        Unit for output.
+        samplesPerChunk:Number of samples in one chunk of data.
+        data_ao:        Data array for analog output.
 
-        Typical usage example:
+    Returns:
+        data: array of measured voltage data.
     """
     #    continues = True
     #    continues = False

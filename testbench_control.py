@@ -1,6 +1,5 @@
 """
-@author: Oliver Becher
-Steuerung Prüfstand
+Steuerung Prüfstand Scheibenläufermotor
 Masterarbeit: Entwicklung eines vernetzten Prüftands zur web-basierten
               Validierung und Parametrierung von Simulationsmodellen
 """
