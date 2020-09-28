@@ -442,6 +442,7 @@ def dataReadAndWrite(**kwargs):
 
             # database check for illumination
             if (i % 62 == 0):
+                cursor = db.cursor()
                 cursor.execute(
                     "SELECT * FROM status WHERE name = 'illumination'")
                 status_information = cursor.fetchall()
