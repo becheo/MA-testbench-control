@@ -27,7 +27,18 @@ import nidaqmx.system
 from nidaqmx.constants import SampleTimingType
 from nidaqmx.constants import TerminalConfiguration
 from nidaqmx.constants import DigitalDriveType
+import mysql.connector as mysql
+import config as cfg
+import testbench_helpers as hlp
+
+
 system = nidaqmx.system.System.local()
+db = mysql.connect(
+    host=cfg.host,
+    user=cfg.user,
+    passwd=cfg.passwd,
+    database=cfg.database
+)
 
 
 def playSound(sound, fs):
@@ -395,7 +406,20 @@ def dataReadAndWrite(**kwargs):
             stream_ao)
 
         samplesLeft = samples
+
+        # check database for illumination settings
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM status WHERE name = 'illumination'")
+        status_information = cursor.fetchall()
+        db.commit()
+        if status_information[0][2] == 'on':
+            hlp.illumination('on')
+        else:
+            hlp.illumination('off')
+        cursor.close()
+
         start_time = time.time()
+        # loop to read and write data
         for i in range(chunks):
             if len(data_ao) == 1:  # for testing purposes (write one sample)
                 analogSingleChannelWriter.write_one_sample(
@@ -415,6 +439,18 @@ def dataReadAndWrite(**kwargs):
                 data[:, i*samplesPerChunk:i*samplesPerChunk +
                      samplesLeft] = lastDataChunk
             samplesLeft -= samplesPerChunk
+
+            # database check for illumination
+            if (i % 62 == 0):
+                cursor.execute(
+                    "SELECT * FROM status WHERE name = 'illumination'")
+                status_information = cursor.fetchall()
+                db.commit()
+                if status_information[0][2] == 'on':
+                    hlp.illumination('on')
+                else:
+                    hlp.illumination('off')
+                cursor.close()
 
             # Text output with 5 measurements taken:
             print("Messdauer [s]: {:.0f};  Motorspannung [V]: {:.3f};  Spannung analoger Ausgang [V]: {:.3f};  Drehzahl [1/min]: {:.0f}" .format(

@@ -27,8 +27,8 @@ def run_testbench(filename):
     """
 
     # Parameter
-    Samplerate_read = 2000  # [Hz] -> Muss immer vielfaches von 'write' sein
-    Samplerate_write = 250  # [Hz] -> muss gleich wie in 'Ersteller'-Datei sein
+    Samplerate_read = 2000  # [Hz] -> must be multiple of 'write'
+    Samplerate_write = 250  # [Hz] -> needs to be same as voltage-curve
     Channels = [0, 1, 2, 3, 6]
 
     filepath = cfg.folder_upload + '/' + filename
