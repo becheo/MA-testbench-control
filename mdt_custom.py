@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """
 Steuerung Prüfstand Scheibenläufermotor
-Masterarbeit: Entwicklung eines vernetzten Prüftands zur web-basierten
+Masterarbeit: Entwicklung eines vernetzten Prüfstands zur web-basierten
               Validierung und Parametrierung von Simulationsmodellen
+
+Skript 'mdt.py' modifiziert für die Verwendung des Prüfstands
 
 Orginalskript mit "dataRead"-Funktion:
 Created on Thu Feb 15 10:36:14 2018
@@ -219,20 +221,12 @@ def dataRead(**kwargs):
 
 
 def dataWrite(voltage, channels, duration, samplingRate, mode):
-    # To do:
-    # - schreiben mehrerer smamples: ao0 immer auf 'Null' setzten (?)
-    # - Anpassung der Schreibefrequenz (falls möglich mit USB6009)
     """Schreibt Daten auf einen analogen Ausgang der Messkarte.
 
     Auswahl zwischen einem Wert (Sprung) oder beliebigem Verlauf von Werten.
     Achtung: vorgegebener Verlauf nur soweit möglich wie von der E-Maschine umsetzbar
-    ... noch weiter ausführen
-
-    Args:
-        voltage: ...
-        ...
-
-        Typical usage example:
+    Funktion zum Testen von Funktionen mit dem USB6009. Wird nur in Verbindung
+    mit 'testbench_control_all.py' verwendet.
     """
     with nidaqmx.Task() as task:
         dev = system.devices[0]
@@ -257,36 +251,16 @@ def dataWrite(voltage, channels, duration, samplingRate, mode):
                 chan_output = task.ao_channels.add_ao_voltage_chan(
                     ao, min_val=0, max_val=5)
 
-            # ao = dev.ao_physical_chans.channel_names[0]
-            # chan_output = task.ao_channels.add_ao_voltage_chan(
-            #     ao, min_val=0, max_val=5)
-
-            # rate = 10**3
             samples = int(samplingRate*duration)
-            # task.timing.cfg_samp_clk_timing(rate=100, sample_mode=nidaqmx.constants.AcquisitionType.CONTINUOUS, samps_per_chan=1000)
             stream = task.out_stream
 
             task.timing.cfg_samp_clk_timing(samplingRate)
 
-            # repeat: jedes einzelene Element wird einzeln hintereinander wiederholt
-            # tile: das array wird aneinandergekachelt
             tile_num = 10
             repeat_num = 1000
-            # data = np.array([np.repeat([1, 0], repeat_num),np.repeat([0, 0], repeat_num)], dtype=np.float64)
-            # data = np.array([np.tile([1, 0], repeat_num), np.tile(
-            #     [0, 1], repeat_num)], dtype=np.float64)
-            # data = np.array([np.tile([0, 0], tile_num), np.tile(
-            #     [0, 1], tile_num)], dtype=np.float64)
 
             data = np.array([np.repeat([np.tile([0, 1], tile_num)], repeat_num),
                              np.repeat([np.tile([0, 0], tile_num)], repeat_num)], dtype=np.float64)
-
-            # task.timing.cfg_samp_clk_timing(6.0)
-            # max_sample_rate_write = task.timing.samp_clk_max_rate
-            # task.timing.cfg_samp_clk_timing(samplingRate, samps_per_chan=samples) # funktioniert so beim schreiben nicht
-            # print(task.timing.cfg_samp_clk_timing)
-
-            # sample_mode=nidaqmx.constants.AcquisitionType.CONTINUOUS
 
             task.start()
             analogMultiChannelWriter = nidaqmx.stream_writers.AnalogMultiChannelWriter(
@@ -295,40 +269,23 @@ def dataWrite(voltage, channels, duration, samplingRate, mode):
             task.wait_until_done(timeout=30)
             task.stop()
 
-            # for i in range(0, 10, 1):
-            #     task.start()
-            #     analogMultiChannelWriter = nidaqmx.stream_writers.AnalogMultiChannelWriter(
-            #         stream)
-            #     analogMultiChannelWriter.write_many_sample(data)
-            #     task.stop()
-
-            # samplerate_write = 1
-            # samples_write = 1 # samplerate_write * duration
-
-            # max_samplingrate = task.timing.samp_clk_max_rate
-            # task.timing.cfg_samp_clk_timing(samplerate_write, samps_per_chan=samples_write)
-
-            # task.timing.samp_timing_type('DAQmx_Val_OnDemand')
-            # DAQmx_Val_OnDemand
-            # DAQmx_Val_SampClk
-
     return chan_output
 
 
 def dataReadAndWrite(**kwargs):
     """Reads and writes data with analog in- and output.
 
-    Notice that voltage levels are bounded to capabilites of device.
+    Notice that voltage levels are bounded to capabilites of device (0 to 5V).
 
     Parameters:
-        amplitude:      voltage amplitude to be measured.
-        samplingRate:   Samplerate in Hz.
-        duration:       Duration of the test that is going to be performed.
-        channels:       Channels of USB6009 that should be measured during test.
-        resolution:     Resolution for voltage measurement.
-        outType:        Unit for output.
-        samplesPerChunk:Number of samples in one chunk of data.
-        data_ao:        Data array for analog output.
+        amplitude:        voltage amplitude to be measured.
+        samplingRate:     Samplerate in Hz.
+        duration:         Duration of the test that is going to be performed.
+        channels:         Channels of USB6009 that should be measured during test.
+        resolution:       Resolution for voltage measurement.
+        outType:          Unit for output.
+        samplesPerChunk:  Number of samples in one chunk of data.
+        data_ao:          Data array for analog output.
 
     Returns:
         data: array of measured voltage data.
@@ -397,7 +354,7 @@ def dataReadAndWrite(**kwargs):
 
         for channel in channels:
             ai = dev.ai_physical_chans.channel_names[channel]
-            if channel == 2 or channel == 6:  # Kanäle die gegen gleichen GND messen
+            if channel == 2 or channel == 6:  # Channels that take measurements to same GND
                 chan = task_ai.ai_channels.add_ai_voltage_chan(
                     ai, min_val=-abs(amplitude), max_val=abs(amplitude), terminal_config=TerminalConfiguration.RSE)
             else:
@@ -428,8 +385,8 @@ def dataReadAndWrite(**kwargs):
         lastDataChunk = np.zeros(
             (len(channels), samples % samplesPerChunk))
 
-        # Daten ausgeben vorbereiten:
-        # Kanal 0: analoger Ausgang
+        # Prepare data output:
+        # Channel 0: analog output channel
         ao = dev.ao_physical_chans.channel_names[0]
         task_ao.ao_channels.add_ao_voltage_chan(
             ao, min_val=0, max_val=5)
@@ -440,12 +397,12 @@ def dataReadAndWrite(**kwargs):
         samplesLeft = samples
         start_time = time.time()
         for i in range(chunks):
-            if len(data_ao) == 1:  # Abfrage für Testphase - später nur eine Art von array
+            if len(data_ao) == 1:  # for testing purposes (write one sample)
                 analogSingleChannelWriter.write_one_sample(
                     data_ao[0, i])  # Numpy
             else:
                 analogSingleChannelWriter.write_one_sample(
-                    data_ao[i])  # Ausgabe
+                    data_ao[i])  # analog output
 
             if samplesLeft >= samplesPerChunk:
                 analogMultiChannelReader.read_many_sample(
@@ -458,17 +415,16 @@ def dataReadAndWrite(**kwargs):
                 data[:, i*samplesPerChunk:i*samplesPerChunk +
                      samplesLeft] = lastDataChunk
             samplesLeft -= samplesPerChunk
-            # Ausgabe
-            # Ausgabe bei 5 Messkanälen (mit Temperaturmessung):
+
+            # Text output with 5 measurements taken:
             print("Messdauer [s]: {:.0f};  Motorspannung [V]: {:.3f};  Spannung analoger Ausgang [V]: {:.3f};  Drehzahl [1/min]: {:.0f}" .format(
                 time.time()-start_time, data[2][i*samplesPerChunk], data_ao[i], ((data[0][i*samplesPerChunk])/4.3)*1000), end='\r')
 
         end_time = time.time() - start_time
         print("\nDauer der Messung: ", end_time)
 
-        # Nach Versuch Spannung wieder auf 0V setzen
-        # Ansonsten würde der Motor weiterhin mit der Spannung betrieben
-        # werden, die als letztes eingestellt war
+        # After test is complete, set voltage to 0V to ensure the motor is
+        # not running anymore
         analogSingleChannelWriter.write_one_sample(0.0)
 
         # task_ao.stop()
